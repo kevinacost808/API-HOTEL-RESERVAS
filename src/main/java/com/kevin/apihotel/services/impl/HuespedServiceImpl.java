@@ -6,6 +6,7 @@ import com.kevin.apihotel.model.entity.Huesped;
 import com.kevin.apihotel.services.IHuespedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,16 +16,19 @@ public class HuespedServiceImpl implements IHuespedService {
     @Autowired
     private HuespedDao huespedDao;
 
+    @Transactional(readOnly = true)
     @Override
     public List<Huesped> getAllHuesped() {
         return (List<Huesped>) huespedDao.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Huesped getByIdHuesped(Long id) {
         return huespedDao.findById(id).orElse(null);
     }
 
+    @Transactional()
     @Override
     public Huesped saveHuesped(HuespedDto huespedDto) {
         Huesped huesped = Huesped.builder()
@@ -39,13 +43,14 @@ public class HuespedServiceImpl implements IHuespedService {
         return huespedDao.save(huesped);
     }
 
+    @Transactional()
     @Override
     public void deleteHuesped(Huesped huesped) {
-
+        huespedDao.delete(huesped);
     }
 
     @Override
     public boolean existIdHuesped(Long id) {
-        return false;
+        return huespedDao.existsById(id);
     }
 }
