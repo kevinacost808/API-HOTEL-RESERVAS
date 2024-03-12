@@ -12,16 +12,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "reserva")
-@Entity
 public class ReservaDto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idReserva;
     private Date fechaEntrada;
     private Date fechaSalida;
     private double precio;
     private String formaPago;
-
-
 }
