@@ -52,6 +52,61 @@ public class HuespedController {
         }
     }
 
+    @GetMapping("/huesped/{id}")
+    public ResponseEntity<?> getHuespedById(@PathVariable Long id){
+        try{
+            if(huespedService.existIdHuesped(id)){
+                Huesped huesped = huespedService.getByIdHuesped(id);
+
+                List<ReservaDto> reservaDtos = new ArrayList<>();
+                for(Reserva reserva: huesped.getReservas()){
+                    ReservaDto reservaDto = ReservaDto.builder()
+                            .idReserva(reserva.getIdReserva())
+                            .precio(reserva.getPrecio())
+                            .formaPago(reserva.getFormaPago())
+                            .fechaSalida(reserva.getFechaSalida())
+                            .fechaEntrada(reserva.getFechaEntrada())
+                            .build();
+                    reservaDtos.add(reservaDto);
+                }
+
+                HuespedDto huespedDto = HuespedDto.builder()
+                        .idHuesped(huesped.getIdHuesped())
+                        .nombre(huesped.getNombre())
+                        .apellido(huesped.getApellido())
+                        .nacionalidad(huesped.getNacionalidad())
+                        .telefono(huesped.getTelefono())
+                        .fechaNacimiento(huesped.getFechaNacimiento())
+                        .reservas(reservaDtos)
+                        .build();
+                
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Huesped "+id)
+                                .object(huespedDto)
+                                .build()
+                        , HttpStatus.OK
+                );
+            }else{
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("No existe el huesped con id "+id)
+                                .object(null)
+                                .build()
+                        , HttpStatus.NOT_FOUND
+                );
+            }
+        }catch (DataAccessException dataAccessException){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(dataAccessException.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     @PostMapping("/huesped")
     public ResponseEntity<?> saveHuesped(@RequestBody HuespedDto huespedDto){
         try {
